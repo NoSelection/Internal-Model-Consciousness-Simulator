@@ -1,0 +1,28 @@
+{
+  "name": "internal-model-consciousness-simulator",
+  "version": "1.0.0",
+  "description": "A simplified implementation of Winfield & Pitt's internal-model robot with ethical reasoning",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "test": "jest"
+  },
+  "keywords": [
+    "consciousness",
+    "AI",
+    "robotics",
+    "internal-model",
+    "ethics",
+    "reinforcement-learning"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "matter-js": "^0.19.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.0",
+    "jest": "^29.0.0"
+  }
+}
