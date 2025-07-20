@@ -179,3 +179,68 @@ cython_debug/
 #  refer to https://docs.cursor.com/context/ignore-files
 .cursorignore
 .cursorindexingignore
+
+# ===== NODE.JS SPECIFIC =====
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Yarn Integrity file
+.yarn-integrity
+
+# parcel-bundler cache (https://parceljs.org/)
+.cache
+.parcel-cache
+
+# ===== CONSCIOUSNESS SIMULATOR SPECIFIC =====
+
+# Saved consciousness models (potentially sensitive AI states)
+saved_models/
+training_data/
+
+# Visual output files  
+visual_output/
+
+# Logs and debug files
+*.log
+debug_*.txt
+
+# Temporary files
+temp/
+tmp/
+*.tmp
+
+# AI model weights and neural network data
+weights/
+models/
+checkpoints/
+
+# Configuration files with potentially sensitive settings
+config/local.json
+config/production.json
+
+# Backup files
+*.bak
+*.backup
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo

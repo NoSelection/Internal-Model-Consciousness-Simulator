@@ -71,7 +71,7 @@ class Environment {
         }
         
         // Apply force towards target
-        const force = 0.0002;
+        const force = 0.002; // Increased from 0.0002 to 0.002 for visible movement
         const fx = (dx / distance) * force;
         const fy = (dy / distance) * force;
         
@@ -79,7 +79,7 @@ class Environment {
         
         // Add some randomness to movement
         if (Math.random() < 0.1) {
-            const randomForce = 0.0001;
+            const randomForce = 0.001; // Increased from 0.0001 to 0.001 for visible movement
             Body.applyForce(body, body.position, {
                 x: (Math.random() - 0.5) * randomForce,
                 y: (Math.random() - 0.5) * randomForce

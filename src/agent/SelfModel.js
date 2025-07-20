@@ -4,7 +4,7 @@ class SelfModel {
             radius: 20,
             mass: 1,
             maxSpeed: 5,
-            maxForce: 0.001,
+            maxForce: 0.01, // Increased from 0.001 to 0.01 for visible movement
             shape: 'circle'
         };
         

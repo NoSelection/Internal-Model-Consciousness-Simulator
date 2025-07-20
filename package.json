@@ -5,6 +5,10 @@
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",
+    "visual": "node visual_simulator.js",
+    "visual-interactive": "node visual_simulator.js --interactive",
+    "load": "node visual_simulator.js --load",
+    "list-models": "node visual_simulator.js --list-models",
     "dev": "nodemon src/index.js",
     "test": "jest"
   },
