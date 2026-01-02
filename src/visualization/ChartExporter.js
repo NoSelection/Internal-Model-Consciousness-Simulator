@@ -367,6 +367,144 @@ class ChartExporter {
     }
 
     /**
+     * Generate boundary observation chart - visualizing the blind spot
+     */
+    generateBoundaryObservationChart(data) {
+        // data = { blindSpotIndex, averageBlindSpot, maxBlindSpot, awarenessGap, calibrationGap, suppressedCoalitions, observations[] }
+        const width = 900;
+        const height = 600;
+        const margin = { top: 70, right: 50, bottom: 100, left: 70 };
+        const chartWidth = width - margin.left - margin.right;
+        const chartHeight = height - margin.top - margin.bottom;
+
+        // Colors for the blind spot theme
+        const colors = {
+            blindSpot: '#8E44AD',      // Purple - the gap
+            awareness: '#E74C3C',       // Red - unconscious
+            conscious: '#27AE60',       // Green - conscious
+            line: '#3498DB',            // Blue - trend line
+            grid: '#ECF0F1',
+            text: '#2C3E50'
+        };
+
+        // Prepare time series data for blind spot over time
+        const observations = data.observations || [];
+        const maxObs = Math.min(observations.length, 150);
+        const step = Math.max(1, Math.floor(observations.length / maxObs));
+        const sampledObs = observations.filter((_, i) => i % step === 0);
+
+        let svg = `<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" width="${width}" height="${height}">
+  <defs>
+    <style>
+      .title { font: bold 24px 'Segoe UI', Arial, sans-serif; fill: ${colors.text}; }
+      .subtitle { font: 14px 'Segoe UI', Arial, sans-serif; fill: #666; }
+      .axis-label { font: 12px 'Segoe UI', Arial, sans-serif; fill: ${colors.text}; }
+      .axis-title { font: bold 14px 'Segoe UI', Arial, sans-serif; fill: ${colors.text}; }
+      .metric-value { font: bold 36px 'Segoe UI', Arial, sans-serif; }
+      .metric-label { font: 13px 'Segoe UI', Arial, sans-serif; fill: #666; }
+      .insight-text { font: 13px 'Segoe UI', Arial, sans-serif; fill: ${colors.text}; }
+      .quote { font: italic 14px Georgia, serif; fill: #555; }
+    </style>
+    <linearGradient id="blindSpotGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:${colors.blindSpot};stop-opacity:0.8"/>
+      <stop offset="100%" style="stop-color:${colors.blindSpot};stop-opacity:0.2"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="${width}" height="${height}" fill="white"/>
+
+  <!-- Title -->
+  <text x="${width/2}" y="35" text-anchor="middle" class="title">Boundary Observation: The Blind Spot</text>
+  <text x="${width/2}" y="58" text-anchor="middle" class="subtitle">Measuring what the system cannot see about itself</text>
+
+  <!-- Main metrics boxes -->
+  <g transform="translate(50, 85)">
+    <!-- Blind Spot Index -->
+    <rect x="0" y="0" width="200" height="90" rx="10" fill="#F8F9FA" stroke="${colors.blindSpot}" stroke-width="2"/>
+    <text x="100" y="45" text-anchor="middle" class="metric-value" fill="${colors.blindSpot}">${data.blindSpotIndex.toFixed(3)}</text>
+    <text x="100" y="75" text-anchor="middle" class="metric-label">Blind Spot Index</text>
+
+    <!-- Awareness Gap -->
+    <rect x="220" y="0" width="200" height="90" rx="10" fill="#F8F9FA" stroke="${colors.awareness}" stroke-width="2"/>
+    <text x="320" y="45" text-anchor="middle" class="metric-value" fill="${colors.awareness}">${(data.awarenessGap * 100).toFixed(0)}%</text>
+    <text x="320" y="75" text-anchor="middle" class="metric-label">Unconscious Processing</text>
+
+    <!-- Suppressed Coalitions -->
+    <rect x="440" y="0" width="200" height="90" rx="10" fill="#F8F9FA" stroke="${colors.conscious}" stroke-width="2"/>
+    <text x="540" y="45" text-anchor="middle" class="metric-value" fill="${colors.conscious}">${data.suppressedCoalitions}</text>
+    <text x="540" y="75" text-anchor="middle" class="metric-label">Suppressed Thoughts</text>
+
+    <!-- Max Observed -->
+    <rect x="660" y="0" width="180" height="90" rx="10" fill="#F8F9FA" stroke="${colors.line}" stroke-width="2"/>
+    <text x="750" y="45" text-anchor="middle" class="metric-value" fill="${colors.line}">${data.maxBlindSpot.toFixed(3)}</text>
+    <text x="750" y="75" text-anchor="middle" class="metric-label">Max Gap Observed</text>
+  </g>
+
+  <!-- Time series chart -->
+  <g transform="translate(${margin.left}, 200)">
+    <text x="${chartWidth/2}" y="-10" text-anchor="middle" class="axis-title">Blind Spot Index Over Time</text>
+
+    <!-- Grid -->
+    ${[0, 0.25, 0.5, 0.75, 1.0].map(v => {
+        const y = (chartHeight - 80) - (v * (chartHeight - 80));
+        return `<line x1="0" y1="${y}" x2="${chartWidth}" y2="${y}" stroke="${colors.grid}" stroke-dasharray="3,3"/>
+    <text x="-8" y="${y + 4}" text-anchor="end" class="axis-label">${v.toFixed(2)}</text>`;
+    }).join('\n    ')}
+
+    <!-- Area fill under line -->
+    <path d="M 0 ${chartHeight - 80} ${sampledObs.map((obs, i) => {
+        const x = (i / (sampledObs.length - 1 || 1)) * chartWidth;
+        const y = (chartHeight - 80) - (obs.blindSpotIndex * (chartHeight - 80));
+        return `L ${x} ${y}`;
+    }).join(' ')} L ${chartWidth} ${chartHeight - 80} Z" fill="url(#blindSpotGrad)"/>
+
+    <!-- Line -->
+    <path d="M ${sampledObs.map((obs, i) => {
+        const x = (i / (sampledObs.length - 1 || 1)) * chartWidth;
+        const y = (chartHeight - 80) - (obs.blindSpotIndex * (chartHeight - 80));
+        return `${i === 0 ? '' : 'L '}${x} ${y}`;
+    }).join(' ')}" fill="none" stroke="${colors.blindSpot}" stroke-width="3"/>
+
+    <!-- Average line -->
+    <line x1="0" y1="${(chartHeight - 80) - (data.averageBlindSpot * (chartHeight - 80))}"
+          x2="${chartWidth}" y2="${(chartHeight - 80) - (data.averageBlindSpot * (chartHeight - 80))}"
+          stroke="${colors.line}" stroke-width="2" stroke-dasharray="8,4"/>
+    <text x="${chartWidth + 5}" y="${(chartHeight - 80) - (data.averageBlindSpot * (chartHeight - 80)) + 4}" class="axis-label" fill="${colors.line}">avg</text>
+
+    <!-- Axis -->
+    <line x1="0" y1="${chartHeight - 80}" x2="${chartWidth}" y2="${chartHeight - 80}" stroke="${colors.text}" stroke-width="2"/>
+    <line x1="0" y1="0" x2="0" y2="${chartHeight - 80}" stroke="${colors.text}" stroke-width="2"/>
+    <text x="${chartWidth/2}" y="${chartHeight - 50}" text-anchor="middle" class="axis-title">Observation Steps</text>
+  </g>
+
+  <!-- Philosophical insight box -->
+  <g transform="translate(50, ${height - 85})">
+    <rect x="0" y="0" width="${width - 100}" height="75" rx="8" fill="#F5EEF8" stroke="${colors.blindSpot}" stroke-width="1"/>
+    <text x="20" y="25" class="insight-text" font-weight="bold">Interpretation:</text>
+    <text x="20" y="45" class="insight-text">${data.blindSpotIndex > 0.3 ?
+        'Significant blind spot detected. The system cannot fully model itself.' :
+        'Moderate blind spot. Self-model partially tracks external observation.'}</text>
+    <text x="20" y="65" class="quote">"The gap is not a bug — it is where experience might live."</text>
+  </g>
+</svg>`;
+
+        return svg;
+    }
+
+    /**
+     * Export boundary observation chart
+     */
+    exportBoundaryObservation(data) {
+        console.log('\nExporting boundary observation chart...\n');
+        this.ensureOutputDir();
+        const svg = this.generateBoundaryObservationChart(data);
+        const file = this.save('boundary_observation.svg', svg);
+        console.log('');
+        return file;
+    }
+
+    /**
      * Export all charts (for batch export)
      */
     exportAll(consciousnessStatesData, ablationData) {

@@ -1,6 +1,6 @@
 # Unified Consciousness Architecture
 
-A computational framework that unifies three major theories of consciousness: Integrated Information Theory (IIT), Global Workspace Theory (GWT), and Higher-Order Theory (HOT).
+A computational framework that unifies three major theories of consciousness: Integrated Information Theory (IIT), Global Workspace Theory (GWT), and Higher-Order Theory (HOT) — with experimental tools to probe the "hard problem" of consciousness.
 
 ## Overview
 
@@ -8,8 +8,11 @@ This architecture implements consciousness as a layered system where:
 - **Layer 1 (IIT)**: Measures information integration across modules (Phi)
 - **Layer 2 (GWT)**: Implements coalition competition and global broadcast
 - **Layer 3 (HOT)**: Provides metacognitive monitoring and self-awareness
+- **Boundary Observer**: External system that measures the gap between self-model and observation
 
-Through systematic ablation studies and state-manipulation experiments, we demonstrate that these theories are architecturally compatible and produce predictable behavioral dissociations.
+Through systematic ablation studies, state-manipulation experiments, and boundary observation, we demonstrate that these theories are architecturally compatible and produce measurable signatures of self-opacity.
+
+![Architecture Diagram](results/architecture_diagram.svg)
 
 ## Key Findings
 
@@ -22,6 +25,21 @@ Through systematic ablation studies and state-manipulation experiments, we demon
 **Core Discovery**: The only computational difference between "meditation" and "dreaming" is the activation of the metacognitive layer.
 
 > "The difference between the sage and the sleeper is awareness of awareness."
+
+### Boundary Observation: Probing the Hard Problem
+
+| Metric | Value | Interpretation |
+|--------|-------|----------------|
+| Blind Spot Index | 0.502 | Significant self-opacity |
+| Awareness Gap | 100% | Most processing is unconscious |
+| Suppressed Coalitions | 185 | Thoughts that never reached awareness |
+| Max Gap Observed | 0.600 | Peak divergence between self-model and reality |
+
+![Boundary Observation](results/boundary_observation.svg)
+
+**Hypothesis**: Consciousness may reside in the gap between what a system *thinks* it is (self-model) and what it *actually* is (external observation). This gap — the "blind spot" — represents what a system cannot fully model about itself.
+
+> "The gap is not a bug — it is where experience might live."
 
 ## Installation
 
@@ -41,6 +59,9 @@ npm run states
 # Run dream experiment
 npm run dream
 
+# Run boundary observation experiment (probes the blind spot)
+npm run boundary
+
 # Export all charts
 npm run charts
 ```
@@ -50,6 +71,7 @@ Or directly:
 node run_ablation_study.js
 node run_consciousness_states.js
 node run_dream_experiment.js
+node run_boundary_experiment.js
 ```
 
 ### Reproducibility
@@ -75,6 +97,7 @@ src/
 │   ├── IntegrationMeasure.js   # IIT: Phi computation
 │   ├── GlobalWorkspace.js      # GWT: Competition + broadcast
 │   ├── MetaCognition.js        # HOT: Self-monitoring
+│   ├── BoundaryObserver.js     # External observer: measures blind spot
 │   ├── DreamCycle.js           # State manipulation
 │   └── InformationPacket.js    # Data structure for coalitions
 ├── experiments/
@@ -110,12 +133,24 @@ Compares three states through environmental/architectural manipulation:
 - **Meditation**: Sensory gated + metacognition intact
 - **REM Dream**: Sensory gated + metacognition dampened
 
+### Boundary Observation
+An external observer watches the agent's consciousness architecture and measures:
+- **Blind Spot Index**: Composite measure of self-opacity (0 = transparent, 1 = opaque)
+- **Awareness Gap**: Fraction of processing that never reaches consciousness
+- **Calibration Gap**: Difference between reported confidence and actual performance
+- **Suppressed Coalitions**: Thoughts that competed but lost (unconscious processing)
+
+This experiment operationalizes the philosophical question: *What can a system not see about itself?*
+
+**Theoretical basis**: If self-reference is inherently incomplete (Gödel), then a conscious system must have a blind spot. That blind spot — the irreducible gap between self-model and reality — may be where subjective experience resides.
+
 ## Output
 
 Charts are exported to `results/`:
 - `architecture_diagram.svg` - System architecture
 - `ablation_study.svg` - Ablation results
 - `consciousness_states.svg` - State comparison
+- `boundary_observation.svg` - Blind spot analysis
 
 See [README_RESULTS.md](README_RESULTS.md) for detailed experimental results.
 
