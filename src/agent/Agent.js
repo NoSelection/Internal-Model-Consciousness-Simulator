@@ -382,11 +382,11 @@ class Agent {
             'move_east': 2,
             'move_west': 3,
             'block': 4,
-            'wait': 4
+            'wait': 5
         };
         
         const key = action.type === 'move' ? `move_${action.direction}` : action.type;
-        return actionMap[key] || 4;
+        return actionMap[key] !== undefined ? actionMap[key] : 5;
     }
 
     convertIndexToAction(index) {
@@ -395,10 +395,11 @@ class Agent {
             { type: 'move', direction: 'south' },
             { type: 'move', direction: 'east' },
             { type: 'move', direction: 'west' },
+            { type: 'block' },
             { type: 'wait' }
         ];
         
-        return actions[index] || actions[4];
+        return actions[index] || actions[5];
     }
 
     learnFromAction(action) {

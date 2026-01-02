@@ -1,4 +1,4 @@
-const { Bodies, Composite } = require('matter-js');
+const { Bodies, Bounds, Composite } = require('matter-js');
 
 class World {
     constructor(engine) {
@@ -79,12 +79,8 @@ class World {
     }
 
     isColliding(bodyA, bodyB) {
-        const dx = bodyA.position.x - bodyB.position.x;
-        const dy = bodyA.position.y - bodyB.position.y;
-        const distance = Math.sqrt(dx * dx + dy * dy);
-        
-        // Simple collision detection (can be improved)
-        return distance < 30;
+        // Use Matter.js bounding boxes for robust overlap detection
+        return Bounds.overlaps(bodyA.bounds, bodyB.bounds);
     }
 
     getState() {

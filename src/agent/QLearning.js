@@ -1,5 +1,5 @@
 class QLearning {
-    constructor(stateSize = 64, actionSize = 5) {
+    constructor(stateSize = 64, actionSize = 6) {
         this.stateSize = stateSize;
         this.actionSize = actionSize;
         this.learningRate = 0.1;
@@ -17,7 +17,8 @@ class QLearning {
             { type: 'move', direction: 'south' },
             { type: 'move', direction: 'east' },
             { type: 'move', direction: 'west' },
-            { type: 'block', direction: 'stay' }
+            { type: 'block', direction: 'stay' },
+            { type: 'wait' }
         ];
         
         this.experienceBuffer = [];

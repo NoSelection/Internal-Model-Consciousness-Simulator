@@ -14,11 +14,15 @@
  */
 
 const { Engine, Runner } = require('matter-js');
+const { setSeed } = require('./src/utils/seed');
 const World = require('./src/world/World');
 const Agent = require('./src/agent/Agent');
 const Environment = require('./src/environment/Environment');
 const DreamCycle = require('./src/consciousness/DreamCycle');
 const ChartExporter = require('./src/visualization/ChartExporter');
+
+// Deterministic runs for research reproducibility
+setSeed(process.env.SEED ? Number(process.env.SEED) : 42);
 
 console.log('================================================================');
 console.log('  CONSCIOUSNESS STATES: Comparative Study');

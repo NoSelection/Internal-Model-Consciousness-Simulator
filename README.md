@@ -52,6 +52,21 @@ node run_consciousness_states.js
 node run_dream_experiment.js
 ```
 
+### Reproducibility
+
+All experiments can be made deterministic by setting a seed (defaults to `42`):
+```bash
+SEED=1337 npm run ablation
+```
+
+### Testing
+
+```bash
+npm test
+```
+
+Tests cover deterministic seeding, action-mapping correctness (including `block` vs `wait`), collision detection robustness, and stable integration hashing.
+
 ## Architecture
 
 ```

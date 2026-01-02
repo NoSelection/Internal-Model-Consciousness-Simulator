@@ -59,10 +59,8 @@ class IntegrationMeasure {
      * Convert complex state objects into a string or vector for entropy calculation
      */
     simplifyState(state) {
-        // Simple hashing strategy: JSON stringify and take length + simple checksum
-        // In a real implementation, this would be a feature vector
         try {
-            const str = JSON.stringify(state);
+            const str = this.stableStringify(state);
             let hash = 0;
             for (let i = 0; i < str.length; i++) {
                 hash = ((hash << 5) - hash) + str.charCodeAt(i);
@@ -72,6 +70,23 @@ class IntegrationMeasure {
         } catch (e) {
             return 0;
         }
+    }
+
+    /**
+     * Deterministic stringify that sorts object keys, ensuring entropy
+     * calculations are invariant to key order (critical for reproducibility).
+     */
+    stableStringify(value) {
+        if (value === null || typeof value !== 'object') {
+            return JSON.stringify(value);
+        }
+
+        if (Array.isArray(value)) {
+            return `[${value.map(v => this.stableStringify(v)).join(',')}]`;
+        }
+
+        const keys = Object.keys(value).sort();
+        return `{${keys.map(k => `${JSON.stringify(k)}:${this.stableStringify(value[k])}`).join(',')}}`;
     }
 
     computeMetrics() {
