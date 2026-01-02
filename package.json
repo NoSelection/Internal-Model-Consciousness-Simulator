@@ -8,6 +8,7 @@
     "states": "node run_consciousness_states.js",
     "dream": "node run_dream_experiment.js",
     "boundary": "node run_boundary_experiment.js",
+    "mutual": "node run_mutual_observation.js",
     "charts": "node export_all_charts.js",
     "test": "jest"
   },

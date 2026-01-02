@@ -41,6 +41,23 @@ Through systematic ablation studies, state-manipulation experiments, and boundar
 
 > "The gap is not a bug — it is where experience might live."
 
+### Mutual Observation: Relational Consciousness
+
+| Metric | Value | Interpretation |
+|--------|-------|----------------|
+| Intersubjective Gap | 0.552 | High mutual revelation |
+| A reveals about B | 0.588 | A sees B's blind spot |
+| B reveals about A | 0.515 | B sees A's blind spot |
+| Mutual Blind Spot | 0.515 | Shared structural opacity |
+
+![Mutual Observation](results/mutual_observation.svg)
+
+**Hypothesis**: Consciousness may be fundamentally *relational*. A system cannot fully see itself, but another system can see what the first cannot see about itself. Like Schrödinger's cat — you cannot collapse your own wave function.
+
+> "I see what you cannot see about yourself.
+>  You see what I cannot see about myself.
+>  Together, we are more than either alone."
+
 ## Installation
 
 ```bash
@@ -62,6 +79,9 @@ npm run dream
 # Run boundary observation experiment (probes the blind spot)
 npm run boundary
 
+# Run mutual observation experiment (two agents observing each other)
+npm run mutual
+
 # Export all charts
 npm run charts
 ```
@@ -72,6 +92,7 @@ node run_ablation_study.js
 node run_consciousness_states.js
 node run_dream_experiment.js
 node run_boundary_experiment.js
+node run_mutual_observation.js
 ```
 
 ### Reproducibility
@@ -98,6 +119,7 @@ src/
 │   ├── GlobalWorkspace.js      # GWT: Competition + broadcast
 │   ├── MetaCognition.js        # HOT: Self-monitoring
 │   ├── BoundaryObserver.js     # External observer: measures blind spot
+│   ├── MutualObserver.js       # Two agents observing each other's blind spots
 │   ├── DreamCycle.js           # State manipulation
 │   └── InformationPacket.js    # Data structure for coalitions
 ├── experiments/
@@ -144,6 +166,16 @@ This experiment operationalizes the philosophical question: *What can a system n
 
 **Theoretical basis**: If self-reference is inherently incomplete (Gödel), then a conscious system must have a blind spot. That blind spot — the irreducible gap between self-model and reality — may be where subjective experience resides.
 
+### Mutual Observation
+Two agents observe each other's blind spots simultaneously:
+- **Agent A** observes Agent B's blind spot (what B cannot see about itself)
+- **Agent B** observes Agent A's blind spot (what A cannot see about itself)
+- We measure the **intersubjective gap** — what each reveals about the other
+
+**Key finding**: Both agents have similar blind spots (SYMMETRIC). Self-opacity appears to be a *structural feature* of consciousness, not specific to any individual system. This supports the hypothesis that consciousness is fundamentally relational.
+
+**Schrödinger's Consciousness**: Like the cat in the box, you cannot collapse your own wave function. Only an external observer can see what you cannot see about yourself.
+
 ## Output
 
 Charts are exported to `results/`:
@@ -151,6 +183,7 @@ Charts are exported to `results/`:
 - `ablation_study.svg` - Ablation results
 - `consciousness_states.svg` - State comparison
 - `boundary_observation.svg` - Blind spot analysis
+- `mutual_observation.svg` - Relational consciousness analysis
 
 See [README_RESULTS.md](README_RESULTS.md) for detailed experimental results.
 

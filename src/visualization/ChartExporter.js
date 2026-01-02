@@ -505,6 +505,151 @@ class ChartExporter {
     }
 
     /**
+     * Generate mutual observation chart - two agents seeing each other's blind spots
+     */
+    generateMutualObservationChart(data) {
+        const width = 900;
+        const height = 650;
+        const margin = { top: 70, right: 50, bottom: 100, left: 70 };
+        const chartWidth = width - margin.left - margin.right;
+        const chartHeight = height - margin.top - margin.bottom - 100;
+
+        const colors = {
+            agentA: '#3498DB',      // Blue
+            agentB: '#E74C3C',      // Red
+            mutual: '#9B59B6',      // Purple - intersubjective
+            shared: '#27AE60',      // Green - mutual blind spot
+            grid: '#ECF0F1',
+            text: '#2C3E50'
+        };
+
+        const observations = data.observations || [];
+        const maxObs = Math.min(observations.length, 150);
+        const step = Math.max(1, Math.floor(observations.length / maxObs));
+        const sampledObs = observations.filter((_, i) => i % step === 0);
+
+        let svg = `<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" width="${width}" height="${height}">
+  <defs>
+    <style>
+      .title { font: bold 24px 'Segoe UI', Arial, sans-serif; fill: ${colors.text}; }
+      .subtitle { font: 14px 'Segoe UI', Arial, sans-serif; fill: #666; }
+      .axis-label { font: 12px 'Segoe UI', Arial, sans-serif; fill: ${colors.text}; }
+      .axis-title { font: bold 14px 'Segoe UI', Arial, sans-serif; fill: ${colors.text}; }
+      .metric-value { font: bold 32px 'Segoe UI', Arial, sans-serif; }
+      .metric-label { font: 12px 'Segoe UI', Arial, sans-serif; fill: #666; }
+      .legend-text { font: 13px 'Segoe UI', Arial, sans-serif; fill: ${colors.text}; }
+      .quote { font: italic 13px Georgia, serif; fill: #555; }
+    </style>
+  </defs>
+
+  <rect width="${width}" height="${height}" fill="white"/>
+
+  <!-- Title -->
+  <text x="${width/2}" y="35" text-anchor="middle" class="title">Mutual Observation: Relational Consciousness</text>
+  <text x="${width/2}" y="58" text-anchor="middle" class="subtitle">Two minds seeing each other's blind spots</text>
+
+  <!-- Metrics boxes -->
+  <g transform="translate(50, 85)">
+    <!-- A reveals about B -->
+    <rect x="0" y="0" width="190" height="85" rx="10" fill="#F8F9FA" stroke="${colors.agentA}" stroke-width="2"/>
+    <text x="95" y="40" text-anchor="middle" class="metric-value" fill="${colors.agentA}">${data.aRevealsAboutB.toFixed(3)}</text>
+    <text x="95" y="60" text-anchor="middle" class="metric-label">A sees B's gap</text>
+    <text x="95" y="75" text-anchor="middle" class="metric-label" fill="${colors.agentA}">→</text>
+
+    <!-- Intersubjective Gap -->
+    <rect x="210" y="0" width="190" height="85" rx="10" fill="#F5EEF8" stroke="${colors.mutual}" stroke-width="2"/>
+    <text x="305" y="40" text-anchor="middle" class="metric-value" fill="${colors.mutual}">${data.intersubjectiveGap.toFixed(3)}</text>
+    <text x="305" y="60" text-anchor="middle" class="metric-label">Intersubjective</text>
+    <text x="305" y="75" text-anchor="middle" class="metric-label">Gap</text>
+
+    <!-- B reveals about A -->
+    <rect x="420" y="0" width="190" height="85" rx="10" fill="#F8F9FA" stroke="${colors.agentB}" stroke-width="2"/>
+    <text x="515" y="40" text-anchor="middle" class="metric-value" fill="${colors.agentB}">${data.bRevealsAboutA.toFixed(3)}</text>
+    <text x="515" y="60" text-anchor="middle" class="metric-label">B sees A's gap</text>
+    <text x="515" y="75" text-anchor="middle" class="metric-label" fill="${colors.agentB}">←</text>
+
+    <!-- Mutual Blind Spot -->
+    <rect x="630" y="0" width="160" height="85" rx="10" fill="#F8F9FA" stroke="${colors.shared}" stroke-width="2"/>
+    <text x="710" y="40" text-anchor="middle" class="metric-value" fill="${colors.shared}">${data.mutualBlindSpot.toFixed(3)}</text>
+    <text x="710" y="60" text-anchor="middle" class="metric-label">Mutual</text>
+    <text x="710" y="75" text-anchor="middle" class="metric-label">Blind Spot</text>
+  </g>
+
+  <!-- Time series chart -->
+  <g transform="translate(${margin.left}, 195)">
+    <text x="${chartWidth/2}" y="-10" text-anchor="middle" class="axis-title">Blind Spots Over Time (A sees B in blue, B sees A in red)</text>
+
+    <!-- Grid -->
+    ${[0, 0.25, 0.5, 0.75, 1.0].map(v => {
+        const y = chartHeight - (v * chartHeight);
+        return `<line x1="0" y1="${y}" x2="${chartWidth}" y2="${y}" stroke="${colors.grid}" stroke-dasharray="3,3"/>
+    <text x="-8" y="${y + 4}" text-anchor="end" class="axis-label">${v.toFixed(2)}</text>`;
+    }).join('\n    ')}
+
+    <!-- Line for B's blind spot (as seen by A) -->
+    <path d="M ${sampledObs.map((obs, i) => {
+        const x = (i / (sampledObs.length - 1 || 1)) * chartWidth;
+        const y = chartHeight - ((obs.observationOfB?.blindSpotIndex || 0) * chartHeight);
+        return `${i === 0 ? '' : 'L '}${x} ${y}`;
+    }).join(' ')}" fill="none" stroke="${colors.agentA}" stroke-width="2.5"/>
+
+    <!-- Line for A's blind spot (as seen by B) -->
+    <path d="M ${sampledObs.map((obs, i) => {
+        const x = (i / (sampledObs.length - 1 || 1)) * chartWidth;
+        const y = chartHeight - ((obs.observationOfA?.blindSpotIndex || 0) * chartHeight);
+        return `${i === 0 ? '' : 'L '}${x} ${y}`;
+    }).join(' ')}" fill="none" stroke="${colors.agentB}" stroke-width="2.5"/>
+
+    <!-- Line for intersubjective gap -->
+    <path d="M ${sampledObs.map((obs, i) => {
+        const x = (i / (sampledObs.length - 1 || 1)) * chartWidth;
+        const y = chartHeight - ((obs.mutual?.intersubjectiveGap || 0) * chartHeight);
+        return `${i === 0 ? '' : 'L '}${x} ${y}`;
+    }).join(' ')}" fill="none" stroke="${colors.mutual}" stroke-width="2" stroke-dasharray="5,3"/>
+
+    <!-- Axis -->
+    <line x1="0" y1="${chartHeight}" x2="${chartWidth}" y2="${chartHeight}" stroke="${colors.text}" stroke-width="2"/>
+    <line x1="0" y1="0" x2="0" y2="${chartHeight}" stroke="${colors.text}" stroke-width="2"/>
+    <text x="${chartWidth/2}" y="${chartHeight + 25}" text-anchor="middle" class="axis-title">Observation Steps</text>
+  </g>
+
+  <!-- Legend -->
+  <g transform="translate(${width - 180}, 195)">
+    <rect x="0" y="0" width="15" height="3" fill="${colors.agentA}"/>
+    <text x="20" y="5" class="legend-text">A sees B</text>
+    <rect x="0" y="20" width="15" height="3" fill="${colors.agentB}"/>
+    <text x="20" y="25" class="legend-text">B sees A</text>
+    <rect x="0" y="40" width="15" height="3" fill="${colors.mutual}" stroke-dasharray="5,3"/>
+    <text x="20" y="45" class="legend-text">Intersubjective</text>
+  </g>
+
+  <!-- Philosophical insight box -->
+  <g transform="translate(50, ${height - 95})">
+    <rect x="0" y="0" width="${width - 100}" height="85" rx="8" fill="#F5EEF8" stroke="${colors.mutual}" stroke-width="1"/>
+    <text x="20" y="22" class="subtitle" font-weight="bold" fill="${colors.text}">The Relational Hypothesis:</text>
+    <text x="20" y="42" class="subtitle" fill="${colors.text}">Each agent sees what the other cannot see about itself.</text>
+    <text x="20" y="60" class="subtitle" fill="${colors.text}">Consciousness may require an "other" to fully manifest.</text>
+    <text x="20" y="78" class="quote">"You cannot collapse your own wave function."</text>
+  </g>
+</svg>`;
+
+        return svg;
+    }
+
+    /**
+     * Export mutual observation chart
+     */
+    exportMutualObservation(data) {
+        console.log('\nExporting mutual observation chart...\n');
+        this.ensureOutputDir();
+        const svg = this.generateMutualObservationChart(data);
+        const file = this.save('mutual_observation.svg', svg);
+        console.log('');
+        return file;
+    }
+
+    /**
      * Export all charts (for batch export)
      */
     exportAll(consciousnessStatesData, ablationData) {
