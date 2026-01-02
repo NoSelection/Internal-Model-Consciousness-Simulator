@@ -245,3 +245,4 @@ config/production.json
 *.swp
 *.swo
 /.claude
+PLAN.md
