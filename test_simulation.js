@@ -3,7 +3,7 @@ const World = require('./src/world/World');
 const Agent = require('./src/agent/Agent');
 const Environment = require('./src/environment/Environment');
 
-console.log('🧠 Testing Internal-Model Consciousness Simulator...\n');
+console.log('🧠 Testing Internal-Model Consciousness Simulator (Unified Architecture)...\n');
 
 // Create simulation components
 const engine = Engine.create();
@@ -42,15 +42,16 @@ const testInterval = setInterval(() => {
     if (step % 50 === 0) {
         const status = agent.getStatus();
         const worldState = world.getState();
+        const cons = status.consciousness;
         
         console.log(`📊 Step ${step}:`);
         console.log(`   Agent position: (${Math.round(status.position.x)}, ${Math.round(status.position.y)})`);
         console.log(`   People in danger: ${worldState.entitiesInDanger ? worldState.entitiesInDanger.length : 0}`);
-        console.log(`   Consciousness metrics:`);
-        console.log(`     Self-awareness: ${status.consciousness.selfAwareness.toFixed(3)}`);
-        console.log(`     World accuracy: ${status.consciousness.worldModelAccuracy.toFixed(3)}`);
-        console.log(`     Ethical alignment: ${status.consciousness.ethicalAlignment.toFixed(3)}`);
-        console.log(`   Q-learning: ${status.qLearningStats.statesExplored} states explored`);
+        
+        console.log(`   🧠 Unified Consciousness Index (UCI): ${cons.UCI}`);
+        console.log(`      L1 (Integration): Φ=${cons.layers.L1_Integration.phi}`);
+        console.log(`      L2 (Workspace):   Broadcasts=${cons.layers.L2_GlobalWorkspace.broadcasts}, Coalitions=${cons.layers.L2_GlobalWorkspace.active_coalitions}`);
+        console.log(`      L3 (Meta):        Focus=${cons.layers.L3_MetaCognition.focus || 'None'}, Accuracy=${cons.layers.L3_MetaCognition.accuracy}`);
         
         if (status.recentActions.length > 0) {
             const lastAction = status.recentActions[status.recentActions.length - 1];
@@ -78,21 +79,22 @@ const testInterval = setInterval(() => {
         console.log('\n📈 Final Results:');
         
         const finalStatus = agent.getStatus();
+        const cons = finalStatus.consciousness;
+        
         console.log(`   Total decisions made: ${finalStatus.qLearningStats.statesExplored}`);
-        console.log(`   Final consciousness metrics:`);
-        console.log(`     Self-awareness: ${finalStatus.consciousness.selfAwareness.toFixed(3)}`);
-        console.log(`     World model accuracy: ${finalStatus.consciousness.worldModelAccuracy.toFixed(3)}`);
-        console.log(`     Ethical alignment: ${finalStatus.consciousness.ethicalAlignment.toFixed(3)}`);
+        console.log(`   Final Consciousness State:`);
+        console.log(`     UCI: ${cons.UCI}`);
+        console.log(`     Φ (Integration): ${cons.layers.L1_Integration.phi}`);
+        console.log(`     Broadcasts: ${cons.layers.L2_GlobalWorkspace.broadcasts}`);
         
         if (finalStatus.ethicalMetrics.avgEthicalScore) {
             console.log(`   Average ethical score: ${finalStatus.ethicalMetrics.avgEthicalScore.toFixed(3)}`);
         }
         
         console.log('\n✨ The agent demonstrates artificial consciousness through:');
-        console.log('   🧠 Self-modeling: Understanding its own capabilities');
-        console.log('   🌍 World modeling: Predicting environmental changes');
-        console.log('   ⚖️  Ethical reasoning: Making moral decisions about interventions');
-        console.log('   📚 Learning: Improving safety behaviors over time');
+        console.log('   🧠 Unified Architecture: IIT (Φ) + GWT (Broadcast) + HOT (Metacognition)');
+        console.log('   🔄 Conscious Cycle: Competition -> Broadcast -> Action');
+        console.log('   📝 Self-Reporting: Measuring its own integration and confidence');
         
         process.exit(0);
     }

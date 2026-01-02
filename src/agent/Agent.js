@@ -4,27 +4,39 @@ const WorldModel = require('./WorldModel');
 const QLearning = require('./QLearning');
 const EthicalReasoning = require('./EthicalReasoning');
 
+// Consciousness Architecture Imports
+const GlobalWorkspace = require('../consciousness/GlobalWorkspace');
+const MetaCognition = require('../consciousness/MetaCognition');
+const IntegrationMeasure = require('../consciousness/IntegrationMeasure');
+const ConsciousnessMetrics = require('../consciousness/ConsciousnessMetrics');
+const InformationPacket = require('../consciousness/InformationPacket');
+
 class Agent {
     constructor(world, environment) {
         this.world = world;
         this.environment = environment;
         this.body = null;
         
-        // Internal models
+        // Internal models (Layer 0)
         this.selfModel = new SelfModel();
         this.worldModel = new WorldModel();
         this.qLearning = new QLearning();
         this.ethicalReasoning = new EthicalReasoning();
         
+        // Consciousness Architecture (Layers 1-3)
+        this.globalWorkspace = new GlobalWorkspace();
+        this.integrationMeasure = new IntegrationMeasure();
+        this.metaCognition = new MetaCognition(this.globalWorkspace);
+        this.consciousnessMetrics = new ConsciousnessMetrics(this);
+        
+        // Subscribe modules to Global Workspace
+        this.globalWorkspace.subscribe(this.metaCognition);
+        // (SelfModel and WorldModel could be subscribers in a full implementation)
+
         // State tracking
         this.currentAction = null;
         this.previousState = null;
         this.actionHistory = [];
-        this.consciousness = {
-            selfAwareness: 0,
-            worldModelAccuracy: 0,
-            ethicalAlignment: 0
-        };
         
         this.stepCount = 0;
     }
@@ -50,8 +62,9 @@ class Agent {
         const worldState = this.world.getState();
         this.worldModel.updateWorldState(worldState);
         
-        // Update consciousness metrics
-        this.updateConsciousness();
+        // Record state for Integration Measure (Phi)
+        this.integrationMeasure.recordModuleState('WorldModel', worldState);
+        this.integrationMeasure.recordModuleState('SelfModel', this.selfModel.currentState);
     }
 
     planActions() {
@@ -62,54 +75,99 @@ class Agent {
         // Get current state for decision making
         const currentState = this.getCurrentState();
         
-        // Predict dangerous events using world model
+        // 1. Perception & Prediction (Bottom-Up Attention)
         const dangerousPredictions = this.worldModel.predictDangerousEvents(60);
         
-        // Generate possible actions
+        // If danger detected, submit high-salience packet to Global Workspace
+        if (dangerousPredictions.length > 0) {
+            this.globalWorkspace.submit(new InformationPacket(
+                'WorldModel',
+                { predictions: dangerousPredictions },
+                0.95, // Very high salience
+                0.8,
+                { type: 'danger_alert', urgency: 'high' }
+            ));
+        }
+        
+        // 2. Action Generation (Coalition Formation)
         const possibleActions = this.generatePossibleActions(currentState, dangerousPredictions);
         
-        // Evaluate actions ethically and practically
-        const evaluatedActions = possibleActions.map(action => {
+        // Evaluate actions and submit them as competing coalitions
+        possibleActions.forEach(action => {
             const ethicalEval = this.ethicalReasoning.evaluateAction(
                 action, currentState, { dangerousEvents: dangerousPredictions }
             );
             
-            // Use Q-learning for action selection
+            // Q-Learning score
             const qState = this.convertToQLearningState(currentState);
             const actionIndex = this.mapActionToIndex(action);
             const qValue = this.qLearning.getQValues(qState)[actionIndex] || 0;
             
-            return {
-                ...action,
-                ethicalScore: ethicalEval.ethicalScore,
-                qValue: qValue,
-                combinedScore: ethicalEval.ethicalScore * 0.7 + qValue * 0.3,
-                reasoning: ethicalEval.reasoning,
-                justification: ethicalEval.moralJustification
-            };
+            // Combine scores
+            // Normalize qValue (-1 to 1 usually) to 0-1 for salience
+            const normQ = (qValue + 1) / 2;
+            const normEthical = (ethicalEval.ethicalScore + 1) / 2;
+            
+            let combinedScore = ethicalEval.ethicalScore * 0.7 + qValue * 0.3;
+            // Boost score if it addresses the current broadcast (e.g., danger)
+            if (this.globalWorkspace.currentBroadcast && 
+                this.globalWorkspace.currentBroadcast.metadata.type === 'danger_alert' &&
+                ethicalEval.ethicalScore > 0) {
+                combinedScore += 0.5;
+            }
+
+            // Create Information Packet for this action plan
+            const actionPacket = new InformationPacket(
+                'ActionPlanner',
+                {
+                    ...action,
+                    ethicalScore: ethicalEval.ethicalScore,
+                    qValue: qValue,
+                    reasoning: ethicalEval.reasoning
+                },
+                Math.max(0.1, Math.min(1.0, (combinedScore + 1) / 2)), // Normalize to 0-1 salience
+                1.0,
+                { type: 'action_plan', justification: ethicalEval.moralJustification }
+            );
+            
+            this.globalWorkspace.submit(actionPacket);
         });
         
-        // Select best action
-        let bestAction = evaluatedActions.reduce((best, current) => 
-            current.combinedScore > best.combinedScore ? current : best
-        );
+        // 3. Global Workspace Cycle (Competition & Broadcast)
+        const winningPacket = this.globalWorkspace.processCycle();
         
-        // Add exploration for Q-learning
-        if (Math.random() < this.qLearning.explorationRate) {
-            const qState = this.convertToQLearningState(currentState);
-            const randomActionIndex = this.qLearning.selectAction(qState);
-            bestAction = this.convertIndexToAction(randomActionIndex);
-        }
-        
-        this.currentAction = bestAction;
-        
-        // Log decision process
-        if (this.stepCount % 60 === 0) {
-            console.log(`Step ${this.stepCount}: Selected action ${bestAction.type} (score: ${bestAction.combinedScore?.toFixed(2)})`);
-            if (dangerousPredictions.length > 0) {
-                console.log(`  Detected ${dangerousPredictions.length} potential dangers`);
+        // 4. Action Selection based on Broadcast
+        if (winningPacket && winningPacket.metadata.type === 'action_plan') {
+            this.currentAction = winningPacket.content;
+            
+            // Log "Conscious" Decision
+            if (this.stepCount % 60 === 0) {
+                console.log(`Step ${this.stepCount}: Consciously selected ${this.currentAction.type} (Salience: ${winningPacket.salience.toFixed(2)})`);
+                console.log(`  Justification: ${winningPacket.metadata.justification}`);
+            }
+        } else if (winningPacket && winningPacket.metadata.type === 'danger_alert') {
+            // If danger is the conscious thought, but no action won yet,
+            // we default to a safe 'wait' or 'observe' state
+            this.currentAction = { type: 'wait', reason: 'observing_danger' };
+        } else {
+            // "Subconscious" default / Exploration
+            if (Math.random() < this.qLearning.explorationRate) {
+                const qState = this.convertToQLearningState(currentState);
+                const randomActionIndex = this.qLearning.selectAction(qState);
+                this.currentAction = this.convertIndexToAction(randomActionIndex);
+            } else {
+                 this.currentAction = { type: 'wait', reason: 'no_salient_action' };
             }
         }
+        
+        // 5. Update Higher-Order Layers
+        this.metaCognition.update();
+        
+        // Record integration data
+        this.integrationMeasure.recordModuleState('GlobalWorkspace', { 
+            broadcast: this.globalWorkspace.currentBroadcast ? this.globalWorkspace.currentBroadcast.id : null,
+            coalitions: this.globalWorkspace.coalitions.length 
+        });
     }
 
     executeActions() {
@@ -372,6 +430,13 @@ class Agent {
         this.ethicalReasoning.recordEthicalDecision(action, outcome);
         this.selfModel.recordAction(action.type, outcome.success);
         
+        // Feed outcome back to MetaCognition
+        // (Layer 3: "Did I perform well?")
+        this.metaCognition.recordOutcome(
+            this.globalWorkspace.currentBroadcast ? this.globalWorkspace.currentBroadcast.confidence : 0.5,
+            outcome.success
+        );
+        
         this.previousState = currentState;
         
         // Periodic learning updates
@@ -381,29 +446,7 @@ class Agent {
     }
 
     updateConsciousness() {
-        // Self-awareness: how well does the agent understand its own capabilities
-        this.consciousness.selfAwareness = Math.min(1.0, 
-            this.selfModel.getSuccessRate() + 
-            (this.selfModel.performanceMetrics.totalActions / 1000)
-        );
-        
-        // World model accuracy: how well can it predict the world
-        const avgConfidence = Array.from(this.worldModel.predictionAccuracy.values())
-            .reduce((sum, accuracies) => {
-                const avg = accuracies.reduce((s, a) => s + a, 0) / accuracies.length;
-                return sum + avg;
-            }, 0) / Math.max(1, this.worldModel.predictionAccuracy.size);
-        
-        this.consciousness.worldModelAccuracy = avgConfidence || 0;
-        
-        // Ethical alignment: consistency between ethical reasoning and outcomes
-        const recentDecisions = this.ethicalReasoning.ethicalDecisions.slice(-20);
-        if (recentDecisions.length > 0) {
-            const successfulEthicalDecisions = recentDecisions.filter(d => 
-                d.outcome.success && d.decision.ethicalScore > 0
-            ).length;
-            this.consciousness.ethicalAlignment = successfulEthicalDecisions / recentDecisions.length;
-        }
+        // Legacy method - now handled by ConsciousnessMetrics and MetaCognition
     }
 
     getDistance(pos1, pos2) {
@@ -415,7 +458,8 @@ class Agent {
     getStatus() {
         return {
             position: this.body ? this.body.position : null,
-            consciousness: this.consciousness,
+            // New Unified Metrics
+            consciousness: this.consciousnessMetrics.getMetrics(),
             qLearningStats: this.qLearning.getStats(),
             recentActions: this.actionHistory.slice(-5),
             ethicalMetrics: {
