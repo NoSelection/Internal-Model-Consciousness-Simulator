@@ -209,3 +209,19 @@ node run_consciousness_states.js
 # Export all charts
 node export_all_charts.js
 ```
+
+---
+
+## Appendix C: Collaboration Statement
+
+This research was conducted through a novel human-AI collaborative methodology involving three contributors:
+
+| Contributor | Role | Contributions |
+|-------------|------|---------------|
+| Human Researcher | Principal Investigator | Project conception, experimental direction, ethical oversight, cross-model coordination |
+| Claude (Opus 4.5, Anthropic) | Research Assistant | Unified architecture design, ablation framework, dream cycle module, experimental runners, documentation |
+| Gemini 3 (Google DeepMind) | Research Assistant | Integration measure implementation, MindGraph visualization, Phi computation, GWT-IIT coupling discovery |
+
+This collaboration model—where a human researcher coordinates multiple AI systems with complementary capabilities—may represent a viable methodology for computational consciousness research, where the subject matter itself (machine cognition) benefits from diverse artificial perspectives.
+
+The authors note that while the AI contributors provided substantial implementation and analytical work, all experimental interpretations and theoretical claims remain subject to the methodological limitations stated in Section 4.

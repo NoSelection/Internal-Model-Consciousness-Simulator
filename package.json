@@ -1,24 +1,26 @@
 {
-  "name": "internal-model-consciousness-simulator",
+  "name": "unified-consciousness-architecture",
   "version": "1.0.0",
-  "description": "A simplified implementation of Winfield & Pitt's internal-model robot with ethical reasoning",
+  "description": "A computational architecture unifying IIT, GWT, and HOT theories of consciousness",
   "main": "src/index.js",
   "scripts": {
-    "start": "node src/index.js",
-    "visual": "node visual_simulator.js",
-    "visual-interactive": "node visual_simulator.js --interactive",
-    "load": "node visual_simulator.js --load",
-    "list-models": "node visual_simulator.js --list-models",
-    "dev": "nodemon src/index.js",
+    "ablation": "node run_ablation_study.js",
+    "states": "node run_consciousness_states.js",
+    "dream": "node run_dream_experiment.js",
+    "charts": "node export_all_charts.js",
     "test": "jest"
   },
   "keywords": [
     "consciousness",
+    "IIT",
+    "GWT",
+    "HOT",
+    "integrated-information-theory",
+    "global-workspace-theory",
+    "higher-order-theory",
     "AI",
-    "robotics",
-    "internal-model",
-    "ethics",
-    "reinforcement-learning"
+    "cognitive-architecture",
+    "ablation-study"
   ],
   "author": "",
   "license": "MIT",
@@ -26,7 +28,6 @@
     "matter-js": "^0.19.0"
   },
   "devDependencies": {
-    "nodemon": "^3.0.0",
     "jest": "^29.0.0"
   }
 }
