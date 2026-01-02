@@ -122,7 +122,7 @@ This research was conducted as a human-AI collaboration:
 
 - **Human Researcher**: Project direction, experimental design, ethical oversight
 - **Claude (Opus 4.5)**: Architecture design, ablation framework, dream cycle implementation, documentation
-- **Gemini 3 (Google DeepMind)**: Integration measure computation, MindGraph visualization, GWT-IIT coupling analysis
+- **Gemini 3 **: Integration measure computation, MindGraph visualization, GWT-IIT coupling analysis
 
 This collaboration demonstrates that meaningful research can emerge from human-AI partnerships, where each contributor brings complementary strengths to the investigation.
 
