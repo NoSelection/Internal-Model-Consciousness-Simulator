@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 500" width="700" height="500">
+  <defs>
+    <style>
+      .title { font: bold 20px 'Segoe UI', Arial, sans-serif; fill: #2C3E50; }
+      .layer-title { font: bold 14px 'Segoe UI', Arial, sans-serif; fill: white; }
+      .layer-desc { font: 12px 'Segoe UI', Arial, sans-serif; fill: #333; }
+      .theory-label { font: bold 11px 'Segoe UI', Arial, sans-serif; }
+      .arrow { stroke: #7F8C8D; stroke-width: 2; fill: none; marker-end: url(#arrowhead); }
+      .connection { stroke: #BDC3C7; stroke-width: 1.5; stroke-dasharray: 5,3; }
+    </style>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#7F8C8D"/>
+    </marker>
+  </defs>
+
+  <rect width="700" height="500" fill="#FAFAFA"/>
+
+  <text x="350" y="35" text-anchor="middle" class="title">Unified Consciousness Architecture (UCA)</text>
+
+  <!-- Layer 3: HOT / MetaCognition -->
+  <g transform="translate(50, 70)">
+    <rect width="600" height="80" rx="10" fill="#9B59B6"/>
+    <text x="20" y="30" class="layer-title">Layer 3: MetaCognition (HOT)</text>
+    <text x="20" y="50" class="layer-desc" fill="white">• Monitors Global Workspace broadcasts</text>
+    <text x="20" y="68" class="layer-desc" fill="white">• Generates meta-thoughts ("I notice I'm avoiding...")</text>
+    <text x="450" y="50" class="theory-label" fill="#E8DAEF">Higher-Order Theory</text>
+  </g>
+
+  <!-- Arrow down -->
+  <path d="M 350 155 L 350 175" class="arrow"/>
+
+  <!-- Layer 2: GWT / Global Workspace -->
+  <g transform="translate(50, 180)">
+    <rect width="600" height="90" rx="10" fill="#3498DB"/>
+    <text x="20" y="28" class="layer-title">Layer 2: Global Workspace (GWT)</text>
+    <text x="20" y="48" class="layer-desc" fill="white">• Coalition competition (winner-take-all)</text>
+    <text x="20" y="66" class="layer-desc" fill="white">• Broadcast winning content to all modules</text>
+    <text x="20" y="84" class="layer-desc" fill="white">• "Theater of the Mind" - creates unified experience</text>
+    <text x="450" y="55" class="theory-label" fill="#D6EAF8">Global Workspace Theory</text>
+  </g>
+
+  <!-- Arrow down -->
+  <path d="M 350 275 L 350 295" class="arrow"/>
+
+  <!-- Layer 1: IIT / Integration -->
+  <g transform="translate(50, 300)">
+    <rect width="600" height="80" rx="10" fill="#F39C12"/>
+    <text x="20" y="28" class="layer-title">Layer 1: Integration Measure (IIT)</text>
+    <text x="20" y="48" class="layer-desc" fill="white">• Computes Φ (phi) from module states</text>
+    <text x="20" y="66" class="layer-desc" fill="white">• Measures information integration across system</text>
+    <text x="450" y="48" class="theory-label" fill="#FCF3CF">Integrated Information Theory</text>
+  </g>
+
+  <!-- Arrow down -->
+  <path d="M 350 385 L 350 405" class="arrow"/>
+
+  <!-- Layer 0: Base Models -->
+  <g transform="translate(50, 410)">
+    <rect width="280" height="60" rx="8" fill="#1ABC9C"/>
+    <text x="15" y="25" class="layer-title">World Model</text>
+    <text x="15" y="45" class="layer-desc" fill="white">Predictions, entities, dangers</text>
+
+    <rect x="320" width="280" height="60" rx="8" fill="#1ABC9C"/>
+    <text x="335" y="25" class="layer-title">Self Model</text>
+    <text x="335" y="45" class="layer-desc" fill="white">State, goals, capabilities</text>
+  </g>
+
+  <!-- UCI Formula -->
+  <g transform="translate(200, 465)">
+    <rect x="0" y="0" width="300" height="28" fill="white" stroke="#2C3E50" rx="5"/>
+    <text x="150" y="19" text-anchor="middle" font-family="'Segoe UI', Arial" font-size="13" fill="#2C3E50">
+      UCI = 0.4×Φ + 0.3×GW + 0.3×HOT
+    </text>
+  </g>
+</svg>

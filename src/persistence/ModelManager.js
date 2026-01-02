@@ -19,6 +19,7 @@ class ModelManager {
         const filename = sessionName ? `${sessionName}_${timestamp}.json` : `agent_consciousness_${timestamp}.json`;
         const filepath = path.join(this.saveDir, filename);
 
+        const status = agent.getStatus();
         const agentData = {
             metadata: {
                 saveDate: new Date().toISOString(),
@@ -26,7 +27,7 @@ class ModelManager {
                 version: '1.0.0',
                 steps: agent.stepCount || 0
             },
-            consciousness: agent.consciousness,
+            consciousness: status.consciousness,
             selfModel: this.serializeSelfModel(agent.selfModel),
             worldModel: this.serializeWorldModel(agent.worldModel),
             qLearning: this.serializeQLearning(agent.qLearning),
@@ -44,7 +45,7 @@ class ModelManager {
             fs.writeFileSync(filepath, JSON.stringify(agentData, null, 2));
             console.log(`💾 Agent consciousness saved to: ${filename}`);
             console.log(`   Steps completed: ${agent.stepCount || 0}`);
-            console.log(`   Consciousness level: ${agent.consciousness.selfAwareness.toFixed(3)}`);
+            console.log(`   Consciousness Index (UCI): ${status.consciousness.UCI}`);
             console.log(`   Success rate: ${(agentData.performance.successRate * 100).toFixed(1)}%`);
             return filepath;
         } catch (error) {
@@ -75,9 +76,6 @@ class ModelManager {
 
     restoreAgent(agent, loadedData) {
         try {
-            // Restore consciousness metrics
-            agent.consciousness = { ...loadedData.consciousness };
-
             // Restore self model
             this.restoreSelfModel(agent.selfModel, loadedData.selfModel);
 
@@ -96,7 +94,6 @@ class ModelManager {
 
             console.log(`✅ Agent consciousness restored successfully!`);
             console.log(`   Restored ${loadedData.metadata.steps} steps of experience`);
-            console.log(`   Consciousness level: ${agent.consciousness.selfAwareness.toFixed(3)}`);
             
             return true;
         } catch (error) {
@@ -275,10 +272,10 @@ class ModelManager {
 
         try {
             fs.writeFileSync(filepath, JSON.stringify(trainingData, null, 2));
-            console.log(`📊 Training data exported to: ${exportFilename}`);
+            console.log(`Training data exported to: ${exportFilename}`);
             return filepath;
         } catch (error) {
-            console.error(`❌ Failed to export training data:`, error.message);
+            console.error(`Failed to export training data:`, error.message);
             return null;
         }
     }

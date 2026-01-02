@@ -244,3 +244,4 @@ config/production.json
 .vscode/
 *.swp
 *.swo
+/.claude

@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const MindGraph = require('./MindGraph');
 
 class SimpleRenderer {
     constructor(world, width = 800, height = 600) {
@@ -10,6 +11,9 @@ class SimpleRenderer {
         this.trailLength = 50;
         this.agentTrail = [];
         this.peopleTrails = new Map();
+        
+        // Internal Consciousness Visualization
+        this.mindGraph = new MindGraph(40, 12);
         
         // Create output directory
         this.outputDir = path.join(__dirname, '../../visual_output');
@@ -24,14 +28,20 @@ class SimpleRenderer {
         // Update trails
         this.updateTrails(agent, environment);
         
+        // Update Internal Mind Graph
+        const metrics = agent.getStatus().consciousness;
+        const flows = agent.integrationMeasure.informationFlows;
+        const currentBroadcast = agent.globalWorkspace.currentBroadcast;
+        this.mindGraph.update(metrics, flows, currentBroadcast);
+        
         // Generate ASCII visualization
         const grid = this.createGrid();
         this.drawElements(grid, agent, environment);
         
         // Console output every 60 frames (1 second at 60fps)
-        if (this.frame % 60 === 0) {
+        if (this.frame % 10 === 0) { // Increased frequency for smoother graph
             console.clear();
-            this.displayGrid(grid);
+            this.displaySimulation(grid, agent);
             this.displayStatus(agent, environment);
         }
         
@@ -162,41 +172,40 @@ class SimpleRenderer {
         }
     }
 
-    displayGrid(grid) {
+    displaySimulation(grid, agent) {
         console.log('🧠 Internal-Model Consciousness Simulator - Live View');
-        console.log('═'.repeat(80));
-        grid.forEach(row => console.log(row.join('')));
-        console.log('═'.repeat(80));
-        console.log('Legend: 🤖=Agent  👤=Person  ⚠️=Person in Danger  ☠=Danger Zone  █=Obstacle  ·=Agent Trail  ,=Person Trail  ?=Predicted Path');
+        console.log('═'.repeat(125));
+        
+        const worldView = grid.map(row => row.join(''));
+        const mindView = this.mindGraph.render().split('\n');
+        
+        // Display side-by-side
+        for (let i = 0; i < worldView.length; i++) {
+            const mindLine = mindView[i] || ' '.repeat(this.mindGraph.width);
+            const separator = (i === 0) ? ' INTERNAL MIND GRAPH ' : (i < mindView.length ? ' | ' : '   ');
+            console.log(worldView[i] + separator + mindLine);
+        }
+        
+        console.log('═'.repeat(125));
+        console.log('Legend: 🤖=Agent 👤=Person ⚠️=In Danger ☠=Danger Zone █=Obstacle | (W)=World (S)=Self (E)=Ethics (Q)=Learn');
     }
 
     displayStatus(agent, environment) {
         const status = agent.getStatus();
         const worldState = this.world.getState();
+        const cons = status.consciousness;
         
-        console.log(`\n📊 Frame: ${this.frame} | Step: ${agent.stepCount || 0}`);
-        console.log(`🎯 Current Action: ${agent.currentAction?.type || 'none'} ${agent.currentAction?.direction || ''}`);
+        console.log(`\n📊 Step: ${agent.stepCount || 0} | Action: ${agent.currentAction?.type || 'none'} ${agent.currentAction?.direction || ''}`);
+        
+        process.stdout.write(`🧠 UCI: ${cons.UCI} | Φ: ${cons.layers.L1_Integration.phi} | GW Broadcasts: ${cons.layers.L2_GlobalWorkspace.broadcasts} | Meta Accuracy: ${cons.layers.L3_MetaCognition.accuracy}\n`);
         
         if (agent.currentAction?.combinedScore) {
-            console.log(`⚖️  Ethical Score: ${agent.currentAction.combinedScore.toFixed(3)}`);
-            console.log(`💭 Justification: ${agent.currentAction.justification}`);
+            console.log(`💭 Reasoning: ${agent.currentAction.justification}`);
         }
         
-        console.log(`\n🧠 Consciousness Metrics:`);
-        console.log(`   Self-awareness: ${status.consciousness.selfAwareness.toFixed(3)}`);
-        console.log(`   World accuracy: ${status.consciousness.worldModelAccuracy.toFixed(3)}`);
-        console.log(`   Ethical alignment: ${status.consciousness.ethicalAlignment.toFixed(3)}`);
-        
-        console.log(`\n📈 Learning Progress:`);
-        console.log(`   States explored: ${status.qLearningStats.statesExplored}`);
-        console.log(`   Exploration rate: ${status.qLearningStats.explorationRate.toFixed(4)}`);
-        console.log(`   Avg Q-value: ${status.qLearningStats.averageQValue.toFixed(3)}`);
-        
         const dangerCount = worldState.entitiesInDanger ? worldState.entitiesInDanger.length : 0;
-        console.log(`\n⚠️  People in danger: ${dangerCount}`);
-        
         if (dangerCount > 0) {
-            console.log(`🚨 SAFETY ALERT: Agent responding to danger!`);
+            console.log(`⚠️  SAFETY ALERT: ${dangerCount} people in danger!`);
         }
     }
 
@@ -227,7 +236,6 @@ class SimpleRenderer {
         const filepath = path.join(this.outputDir, filename);
         
         fs.writeFileSync(filepath, JSON.stringify(detailedState, null, 2));
-        console.log(`💾 Saved detailed state to: ${filename}`);
     }
 
     generateSummaryReport(agent) {
@@ -252,8 +260,6 @@ class SimpleRenderer {
         const filepath = path.join(this.outputDir, filename);
         
         fs.writeFileSync(filepath, JSON.stringify(report, null, 2));
-        console.log(`📋 Final consciousness report saved to: ${filename}`);
-        
         return report;
     }
 
